@@ -1,5 +1,5 @@
 /* C++ program to calculate the initial price of a
-plain vanilla put option */
+plain vanilla call option */
 
 #include <iostream>
 #include <vector>
@@ -10,7 +10,7 @@ using std::cin;
 using std::endl;
 using std::vector;
 
-double crr_put(double& S0, double& K, int& T, double& u, double& d, double& r);
+double crr_call(double& S0, double& K, int& T, double& u, double& d, double& r);
 
 int main()
 {
@@ -30,12 +30,12 @@ int main()
     cout << "Please enter fixed interest rate" << endl;
     cin >> r;
 
-    cout << "The initial price of a plain vanilla put is " << crr_put(S0, K, T, u, d, r) << endl;
+    cout << "The initial price of a plain vanilla call is " << crr_call(S0, K, T, u, d, r) << endl;
 
     return 0;
 }
 
-double crr_put(double& S0, double& K, int& T, double& u, double& d, double& r)
+double crr_call(double& S0, double& K, int& T, double& u, double& d, double& r)
 {
     // check input parameters
     if (S0 <=0 || u<=-1 || d<=-1 || d>=u || r<=-1)
@@ -62,17 +62,17 @@ double crr_put(double& S0, double& K, int& T, double& u, double& d, double& r)
         ST.push_back(S0*pow(1+u,T-i)*pow(1+d,i));
     }
 
-    // calculate terminal put prices
+    // calculate terminal call prices
     vector <double> prices;
     for (int i=0; i<=T; ++i)
     {
-        prices.push_back(K-ST[i]>0?K-ST[i]:0);
+        prices.push_back(ST[i]-K>0?ST[i]-K:0);
     }
 
     // calculate risk neutral probabilities
     double q=(r-d)/(u-d);
 
-    // calculate price of the put at intermediate times t=T-1, T-2,...,1,0
+    // calculate price of the call at intermediate times t=T-1, T-2,...,1,0
     for (int n=T-1; n>=0; --n)
     {
         for (int j=0; j<=n; ++j)
