@@ -1,4 +1,4 @@
-/* C++ program to calculate the initial price of a binary call option using the CRR formula */
+/* C++ program to calculate the initial price of a binary put option using the CRR formula */
 
 #include<iostream>
 #include<cmath>
@@ -10,7 +10,7 @@ using std::endl;
 int nCk(int n, int r); // function to calculate number of ways to choose r from n objects
 double Binom_CDF(int k, int n, double q); // binomial cumulative distribution function
 
-double CRR_formula_Bincall(double& S0, double& K, int& T, double& u, double& d, double& r);
+double CRR_formula_Binput(double& S0, double& K, int& T, double& u, double& d, double& r);
 
 int main()
 {
@@ -28,7 +28,7 @@ int main()
     cin >> d;
     cout << "Please enter fixed interest rate" << endl;
     cin >> r;
-    cout << "The initial price of a binary call option is " << CRR_formula_Bincall(S0, K, T, u, d, r) << endl;
+    cout << "The initial price of a binary put option is " << CRR_formula_Binput(S0, K, T, u, d, r) << endl;
     
     return 0;
 }
@@ -62,7 +62,7 @@ double Binom_CDF(int k, int n, double q)
     return var1;
 }
 
-double CRR_formula_Bincall(double& S0, double& K, int& T, double& u, double& d, double& r)
+double CRR_formula_Binput(double& S0, double& K, int& T, double& u, double& d, double& r)
 {
     // check input parameters
     if (S0 <=0 || d<=-1 || d>=u || r<=-1)
@@ -88,14 +88,13 @@ double CRR_formula_Bincall(double& S0, double& K, int& T, double& u, double& d, 
     
     // calculating terms: q, q_dash, var2
     double q = (R - D) / (U - D);
-    
     double var2 = log(K / (S0 * pow(D,T)) / log(U / D));
-    double A = std::floor(var2) + 1;
+    if (std::ceil(var2) == std::floor(var2))
+        var2 = std::floor(var2);
     
-    double price = (1 / pow(R,T)) * (1-Binom_CDF(A-1, T, q));
+    var2 = std::floor(var2);
+    
+    double price = (1 / pow(R,T)) * Binom_CDF(var2, T, q);
 
     return price;
 }
-
-
-
